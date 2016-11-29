@@ -11,6 +11,8 @@
         
         int WINDOW_WIDTH = 600;
         int WINDOW_HEIGHT = 600;
+        int RIGHT_ARROW = 39;
+        int LEFT_ARROW = 37;
         
         int REFRESH_RATE_PER_SECOND = 30;
         int GREY = 204;
@@ -57,13 +59,23 @@
           
           void update() 
           { 
-        
-            Bx--; 
+          if (keyPressed && keyCode == RIGHT_ARROW) {
+              Bx-=7; 
+            }
+          if (keyPressed && keyCode == LEFT_ARROW) {
+              Bx+=7; 
+            }
         
             if (Bx < -100) 
             { 
         
               Bx = width; 
+        
+            } 
+          if (Bx > width) 
+            { 
+        
+              Bx = -100; 
         
             } 
         
@@ -73,7 +85,7 @@
           void drawLine() 
           {
           fill(0,0,255);
-          	 rect(Bx, By, 100, height-); 
+          	 rect(Bx, By, 100, height-By); 
 		  }
         
         }
