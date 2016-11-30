@@ -6,6 +6,7 @@
         // Declare and contruct two objects (h1, h2) from the class HorizontalLine 
         
         // Declare and contruct two objects (h1, h2) from the class HorizontalLine
+        var BuildingWidths = [];
         Building randomBuilding = new Building();
         ArrayList<Building> BuildingList = new ArrayList<Building>(); 
         
@@ -13,7 +14,7 @@
         int WINDOW_HEIGHT = 600;
         int RIGHT_ARROW = 39;
         int LEFT_ARROW = 37;
-        int NUMBER_OF_BUILDINGS = 6;
+        int NUMBER_OF_BUILDINGS = 7;
         
         int REFRESH_RATE_PER_SECOND = 30;
         int GREY = 204;
@@ -26,7 +27,7 @@
           frameRate(REFRESH_RATE_PER_SECOND);//how often per second the draw function is called 
 
           for(var i = 0; i < NUMBER_OF_BUILDINGS; i++) {
-            BuildingList.add(new Building(random(0,200),i*110));
+            BuildingList.add(new Building(random(0,200),i*100,100));
           }
         
         }
@@ -39,7 +40,11 @@
 
             for(var i = 0; i < NUMBER_OF_BUILDINGS; i++) {
             Building currentBuilding = BuildingList.get(i);
-            currentBuilding.updateAndRedraw();            }
+            currentBuilding.updateAndRedraw();  
+            if((i+1) % 2 == 0){
+            currentBuilding.drawTower();
+            }
+            }
         } 
         
          
@@ -47,14 +52,16 @@
         class Building { 
           
           //attributes
-          float By, Bx; 
+          float By, Bx, Bw; 
         
           //constructor 
-          Building(float BuildingY, float BuildingX) {  
+          Building(float BuildingY, float BuildingX, float BuildingW) {  
         
             By = BuildingY; 
         
             Bx = BuildingX; 
+
+            Bw = BuildingW;
         
           } 
           
@@ -90,9 +97,13 @@
           
           void drawBuilding() 
           {
-          fill(0,0,255);
-          	 rect(Bx, By, 100, height-By); 
+          fill(65,65,65);
+          rect(Bx, By, 90, height-By); 
 		  }
+          void drawTower(){
+          rect(Bx+22.5, By-30, 45, 30);
+          }
+
         
         }
         
