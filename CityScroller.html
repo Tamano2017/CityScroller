@@ -11,7 +11,7 @@
         int WINDOW_HEIGHT = 600;
         int RIGHT_ARROW = 39;
         int LEFT_ARROW = 37;
-        Skyline slowSkyline = new Skyline(); 
+        Skyline slowSkyline = new Skyline(3); 
         
         int REFRESH_RATE_PER_SECOND = 30;
         int GREY = 204;
@@ -21,9 +21,8 @@
         
           size(WINDOW_WIDTH, WINDOW_HEIGHT);
         
-          frameRate(REFRESH_RATE_PER_SECOND);//how often per second the draw function is called 
+          slowSkyline.addSkyline();
 
-          
         
         }
         
@@ -33,8 +32,14 @@
         
           background(GREY);
 
-          slowSkyline.BuildSkyline();
+          slowSkyline.drawSkyline();
+          if (keyPressed && keyCode == RIGHT_ARROW) {
+              slowSkyline.updateAndRefill();
+            }
+      
 
+
+          
         } 
         
          
@@ -42,93 +47,89 @@
         class Building { 
           
           //attributes
-          float By, Bx, Bw; 
+          float By, Bx, Bw, s; 
         
           //constructor 
-          Building(float BuildingY, float BuildingX, float BuildingW) {  
+          Building(float BuildingY, float BuildingX, float BuildingW, float speed) {  
         
             By = BuildingY; 
         
             Bx = BuildingX; 
 
             Bw = BuildingW;
-        
+
+            s = speed;
+
           } 
           
-          void updateAndRedraw() {
-            update();
-            drawBuilding();
-          }
-          
-          void update() 
-          { 
-          if (keyPressed && keyCode == RIGHT_ARROW) {
-              Bx-=7; 
-            }
-          if (keyPressed && keyCode == LEFT_ARROW) {
-              Bx+=7; 
-            }
-        
-            if (Bx < -100) 
-            { 
-        
-              Bx = width; 
-        
-            } 
-          if (Bx > width) 
-            { 
-        
-              Bx = -100; 
-        
-            } 
-        
-        
-          } 
           
           void drawBuilding() 
           {
           fill(65,65,65);
-          rect(Bx, By, Bw, height-By); 
+          rect(Bx, By, Bw, height-By);
       }
           void drawTower(){
           rect(Bx+Bw/4, By-30, Bw/2, 30);
-          rect(Bx+Bw/2, By-70, 5,40);
+          rect(Bx+Bw/2.1, By-70, 5,40);
+          }
+          void update(){
+          Bx-=s;
           }
 
         
         }
         class Skyline{
-          var bw, xPos;
+          var xPos;
           ArrayList<Building> BuildingList; 
+          var bw;
+          float SkyS;
     
-          Skyline() {  
+          Skyline(float SkySpeed) {  
             xPos = 0;
+            SkyS = SkySpeed;
             BuildingList = new ArrayList<Building>();
-            bw = random(50,120);
           }
           
 
           void addBuilding() 
             { 
-              BuildingList.add(new Building(random(50,250),xPos,bw));
+              bw = random(50,150);
+              BuildingList.add(new Building(random(50,250),xPos,bw,SkyS));
               xPos += bw + 10;
             } 
-
-          void BuildSkyline(){
-            if(bw <= width){
-             addBuilding();
+            void addSkyline(){
+            while (xPos < width){
+            addBuilding();
             }
+            }
+
+            void drawSkyline(){
             for(var z = 0; z < BuildingList.size(); z++) {
               Building currentBuilding = BuildingList.get(z);
               currentBuilding.drawBuilding();
               if((z+1) % 3 == 0){
               currentBuilding.drawTower();
-            } 
+
+              }
 
             }
+          
           }
 
-        }
+          void updateAndRefill(){
+          for(var i = 0; i < BuildingList.size(); i++) {
+              Building currentBuilding = BuildingList.get(i);
+              currentBuilding.update();
+              }
+          if (xPos > width - 100){
+          addBuilding();
+          }
+
+
+            }
+
+          }
+    
 
         
   
