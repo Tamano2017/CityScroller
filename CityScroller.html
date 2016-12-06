@@ -7,13 +7,13 @@
         
         // Declare and contruct two objects (h1, h2) from the class HorizontalLine
         
-        int WINDOW_WIDTH = 600;
-        int WINDOW_HEIGHT = 600;
+        int WINDOW_WIDTH = 1240;
+        int WINDOW_HEIGHT = 650;
         int RIGHT_ARROW = 39;
         int LEFT_ARROW = 37;
-        Skyline slowSkyline = new Skyline(3,50,150,20,4);
-        Skyline fastSkyline = new Skyline(5,200,250,50,2);
-        Skyline prettyFastSkyline = new Skyline(7,300,350,80,5);  
+        Skyline slowSkyline = new Skyline(2,50,150,20,4);
+        Skyline fastSkyline = new Skyline(4,160,250,50,2);
+        Skyline prettyFastSkyline = new Skyline(6,260,350,80,5);  
       
         int REFRESH_RATEPER_SECOND = 30;
         int GREY = 204;
@@ -90,6 +90,12 @@
           void update(){
           Bx-=s;
           }
+          int getBx(){
+          return Bx;
+          }
+          int getBy(){
+          returnBy;
+          }
 
         
         }
@@ -133,7 +139,6 @@
               currentBuilding.drawBuilding();
               if((z+1) % i == 0){
               currentBuilding.drawTower();
-
               }
 
             }
@@ -148,9 +153,11 @@
           if (xPos > width - 100){
           addBuilding();
           }
-
-
+          Building firstBuilding = BuildingList.get(0);
+          if(firstBuilding.getBx() <= -200){
+          BuildingList.remove(0);
             }
+          }
 
           }
     
