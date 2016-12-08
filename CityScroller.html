@@ -11,9 +11,10 @@
         int WINDOW_HEIGHT = 650;
         int RIGHT_ARROW = 39;
         int LEFT_ARROW = 37;
-        Skyline slowSkyline = new Skyline(2,50,150,20,4);
-        Skyline fastSkyline = new Skyline(4,160,250,50,2);
-        Skyline prettyFastSkyline = new Skyline(6,260,350,80,5);  
+        Skyline slowSkyline = new Skyline(1,50,150,20);
+        Skyline fastSkyline = new Skyline(2,160,250,50);
+        Skyline prettyFastSkyline = new Skyline(4,260,350,80);  
+        Mario readyMario = new Mario(100,100);
       
         int REFRESH_RATEPER_SECOND = 30;
         int GREY = 204;
@@ -26,6 +27,7 @@
           slowSkyline.addSkyline();
           fastSkyline.addSkyline();
           prettyFastSkyline.addSkyline();
+          readyMario.updateAndDrawMario();
 
         
         }
@@ -55,7 +57,27 @@
           
         } 
         
-         
+        class tower{
+        var tX, tY, tW, tS;
+
+        tower(var towerX, towerY, towerW, towerS){
+        tX = towerX;
+        tY = towerY;
+        tW = towerW;
+        tS = towerS;
+        }
+        void drawTower(){
+        rect(tX+tW/4, tY-30, tW/2, 30);
+        rect(tX+tW/2.1, tY-70, 5,40);
+        }
+        void update(){
+        tX-=tS;
+        }
+        int gettX(){
+        return tX;
+          }
+
+        }
         
         class Building { 
           
@@ -83,10 +105,7 @@
           fill(c,c,c);
           rect(Bx, By, Bw, height-By);
       }
-          void drawTower(){
-          rect(Bx+Bw/4, By-30, Bw/2, 30);
-          rect(Bx+Bw/2.1, By-70, 5,40);
-          }
+
           void update(){
           Bx-=s;
           }
@@ -99,35 +118,46 @@
 
         
         }
+
         class Skyline{
           var xPos;
           ArrayList<Building> BuildingList; 
+          ArrayList<Tower> TowerList;
           var bw;
           float SkyS;
           float UpperLimit;
           float LowerLimit;
           float Sc;
           float i;
+          var Y;
+          var last;
     
-          Skyline(float SkySpeed, float LowL, float UpL, float SkylineColor, float randomInteger) {  
+          Skyline(float SkySpeed, float LowL, float UpL, float SkylineColor) {  
             xPos = 0;
+            tPos = 0;
             SkyS = SkySpeed;
             UpperLimit = UpL;
             LowerLimit = LowL;
             Sc = SkylineColor;
-            i = randomInteger;
+            bw = 0;
+            Y = 0;
+            last = 0;
             BuildingList = new ArrayList<Building>();
+            TowerList = new ArrayList<Tower>();
           }
-          
-
+          void addTower(){
+          TowerList.add(new tower(xPos,Y,bw,SkyS));
+          }
           void addBuilding() 
             { 
               bw = random(50,150);
-
-              BuildingList.add(new Building(random(LowerLimit,UpperLimit),xPos,bw,SkyS,Sc));
+              Y = random(LowerLimit,UpperLimit);
+              BuildingList.add(new Building(Y,xPos,bw,SkyS,Sc));
+              addTower();
               xPos += bw + 2;
+
             } 
-            void addSkyline(){
+          void addSkyline(){
             while (xPos < width){
             addBuilding();
             }
@@ -137,11 +167,10 @@
             for(var z = 0; z < BuildingList.size(); z++) {
               Building currentBuilding = BuildingList.get(z);
               currentBuilding.drawBuilding();
-              if((z+1) % i == 0){
-              currentBuilding.drawTower();
-
-              }
-
+            }
+            for(var h = 0; h < TowerList.size(); h++){
+            tower currenttower = TowerList.get(h);
+            currenttower.drawTower();
             }
           
           }
@@ -151,18 +180,70 @@
               Building currentBuilding = BuildingList.get(b);
               currentBuilding.update();
               }
-          if (xPos > width - 100){
-          addBuilding();
-          }
+          for(var h = 0; h < TowerList.size(); h++) {
+              tower currenttower = TowerList.get(h);
+              currenttower.update();
+              }
           Building firstBuilding = BuildingList.get(0);
           if(firstBuilding.getBx() <= -200){
           BuildingList.remove(0);
+          TowerList.remove(0);
+            }
+          int last = BuildingList.size();
+          Building lastBuilding = BuildingList.get(7);
+          if(lastBuilding.getBx() <= width + 300){
+          addBuilding();
+          }
+          }
+
+          }
+      class Mario
+        {
+          //attributes
+          var marioX, marioY, coins;
+          PImage img;
+
+          //constructor
+          Mario(var mX, var mY){
+            marioX = mX;
+            marioY = mY;
+            img = loadImage("frame_0_delay-0.05s.jpg");
+            coins = 0;
+          }
+
+          void updateAndDrawMario(){
+            update();
+            drawMario();
+          }
+
+          void update(){
+            if (keyPressed && keyCode == UP_ARROW) {
+              jump();
+            }
+            else {
+              fall();
+            }
+            
+          }
+
+          void drawMario(){ 
+            image(img, marioX, marioY,64,64);
+          }
+
+          void jump(){
+            img = loadImage("frame_1_delay-0.05s.jpg");
+            marioY -= 5;
+           }
+
+          void fall(){
+           if(marioY < height - 75){
+              marioY += 5;
+            }
+           else { //at bottom of screen 
+              img = loadImage("frame_0_delay-0.05s.jpg");
             }
           }
-
-          }
-    
-
+        }
         
   
         </script> 
