@@ -13,11 +13,12 @@
         int LEFT_ARROW = 37;
         Skyline slowSkyline = new Skyline(1,50,150,20);
         Skyline fastSkyline = new Skyline(2,160,250,50);
-        Skyline prettyFastSkyline = new Skyline(4,260,350,80);  
-        Mario readyMario = new Mario(100,100);
-      
+        Skyline prettyFastSkyline = new Skyline(4,260,350,80); 
+        BackgroundStuff newStuff = new BackgroundStuff(900);
+
         int REFRESH_RATEPER_SECOND = 30;
         int GREY = 204;
+        var audio = new Audio('The_Batman_Theme_Song[ConvertToAudio.com].mp3');
         //runs once at the start of the program 
         void setup() 
         {
@@ -27,7 +28,6 @@
           slowSkyline.addSkyline();
           fastSkyline.addSkyline();
           prettyFastSkyline.addSkyline();
-          readyMario.updateAndDrawMario();
 
         
         }
@@ -37,10 +37,19 @@
         void draw() { 
         
           background(GREY);
+          newStuff.drawBatSignal();
+          if (keyPressed && keyCode == RIGHT_ARROW) {
+              newStuff.drawAndUpdate();
+            }
 
           slowSkyline.drawSkyline();
           if (keyPressed && keyCode == RIGHT_ARROW) {
               slowSkyline.updateAndRefill();
+            }
+          if (keyPressed && keyCode == RIGHT_ARROW) {
+              audio.play();
+            } else {
+            audio.pause();
             }
          fastSkyline.drawSkyline();
          if (keyPressed && keyCode == RIGHT_ARROW) {
@@ -57,110 +66,101 @@
           
         } 
         
-        class tower{
-        var tX, tY, tW, tS;
+        class Tower{
+        var TowerX, TowerY, TowerW, TowerS;
 
-        tower(var towerX, towerY, towerW, towerS){
-        tX = towerX;
-        tY = towerY;
-        tW = towerW;
-        tS = towerS;
+        Tower(var tX, tY, tW, tS){
+        TowerX = tX;
+        TowerY = tY;
+        TowerW = tW;
+        TowerS = tS;
         }
         void drawTower(){
-        rect(tX+tW/4, tY-30, tW/2, 30);
-        rect(tX+tW/2.1, tY-70, 5,40);
+        rect(TowerX+TowerW/4, TowerY-30, TowerW/2, 30);
+        rect(TowerX+TowerW/2.1, TowerY-70, 5,40);
         }
         void update(){
-        tX-=tS;
+        TowerX-=TowerS;
         }
-        int gettX(){
-        return tX;
-          }
 
         }
         
         class Building { 
           
           //attributes
-          float By, Bx, Bw, s, c; 
+          float BuildingY, BuildingX, BuildingW, speed, color; 
         
           //constructor 
-          Building(int BuildingY, float BuildingX, float BuildingW, float speed, float color) {  
+          Building(int By, float Bx, float Bw, float s, float c) {  
         
-            By = BuildingY; 
+            BuildingY = By; 
         
-            Bx = BuildingX; 
+            BuildingX = Bx; 
 
-            Bw = BuildingW;
+            BuildingW = Bw;
 
-            s = speed;
+            speed = s;
 
-            c = color;
+            color = c;
 
           } 
           
           
           void drawBuilding() 
           {
-          fill(c,c,c);
-          rect(Bx, By, Bw, height-By);
+          fill(color,color,color);
+          stroke(0,0,0);
+          rect(BuildingX, BuildingY, BuildingW, height-BuildingY);
       }
 
           void update(){
-          Bx-=s;
+          BuildingX-=speed;
           }
           int getBx(){
-          return Bx;
-          }
-          int getBy(){
-          returnBy;
+          return BuildingX;
           }
 
         
         }
 
         class Skyline{
-          var xPos;
+          var xPosition, buildingwidth, SkySpeed, UpperLimit, LowerLimit, SkylineColor, Y, isTower;
           ArrayList<Building> BuildingList; 
           ArrayList<Tower> TowerList;
-          var bw;
-          float SkyS;
-          float UpperLimit;
-          float LowerLimit;
-          float Sc;
-          float i;
-          var Y;
-          var last;
     
-          Skyline(float SkySpeed, float LowL, float UpL, float SkylineColor) {  
+          Skyline(float SkyS, float LowL, float UpL, float Sc) {  
             xPos = 0;
-            tPos = 0;
-            SkyS = SkySpeed;
+            SkySpeed = SkyS;
             UpperLimit = UpL;
             LowerLimit = LowL;
-            Sc = SkylineColor;
-            bw = 0;
+            SkylineColor = Sc;
+            buildingwidth = 0;
             Y = 0;
-            last = 0;
+            isTower = true;
             BuildingList = new ArrayList<Building>();
             TowerList = new ArrayList<Tower>();
           }
           void addTower(){
-          TowerList.add(new tower(xPos,Y,bw,SkyS));
+          TowerList.add(new Tower(xPosition,Y,buildingwidth,SkySpeed));
           }
           void addBuilding() 
             { 
-              bw = random(50,150);
+              buildingwidth = random(50,150);
               Y = random(LowerLimit,UpperLimit);
-              BuildingList.add(new Building(Y,xPos,bw,SkyS,Sc));
+              BuildingList.add(new Building(Y,xPosition,buildingwidth,SkySpeed,SkylineColor));
+              if(isTower == false){
               addTower();
-              xPos += bw + 2;
-
+              isTower = true;
+              } else {
+              isTower = false;
+              }
+              xPosition += buildingwidth + 2;
+            
             } 
           void addSkyline(){
-            while (xPos < width){
+            while (xPosition < width){
             addBuilding();
-            }
+            } 
             }
 
             void drawSkyline(){
@@ -169,8 +169,8 @@
               currentBuilding.drawBuilding();
             }
             for(var h = 0; h < TowerList.size(); h++){
-            tower currenttower = TowerList.get(h);
-            currenttower.drawTower();
+            Tower currentTower = TowerList.get(h);
+            currentTower.drawTower();
             }
           
           }
@@ -181,69 +181,45 @@
               currentBuilding.update();
               }
           for(var h = 0; h < TowerList.size(); h++) {
-              tower currenttower = TowerList.get(h);
-              currenttower.update();
+              Tower currentTower = TowerList.get(h);
+              currentTower.update();
               }
           Building firstBuilding = BuildingList.get(0);
           if(firstBuilding.getBx() <= -200){
           BuildingList.remove(0);
           TowerList.remove(0);
             }
-          int last = BuildingList.size();
-          Building lastBuilding = BuildingList.get(7);
-          if(lastBuilding.getBx() <= width + 300){
-          addBuilding();
-          }
+          
           }
 
           }
-      class Mario
-        {
-          //attributes
-          var marioX, marioY, coins;
-          PImage img;
+      class BackgroundStuff {
+      var BackgroundStuffX;
+      PImage batSignal;
 
-          //constructor
-          Mario(var mX, var mY){
-            marioX = mX;
-            marioY = mY;
-            img = loadImage("frame_0_delay-0.05s.jpg");
-            coins = 0;
-          }
 
-          void updateAndDrawMario(){
-            update();
-            drawMario();
-          }
-
-          void update(){
-            if (keyPressed && keyCode == UP_ARROW) {
-              jump();
-            }
-            else {
-              fall();
-            }
-            
-          }
-
-          void drawMario(){ 
-            image(img, marioX, marioY,64,64);
-          }
-
-          void jump(){
-            img = loadImage("frame_1_delay-0.05s.jpg");
-            marioY -= 5;
-           }
-
-          void fall(){
-           if(marioY < height - 75){
-              marioY += 5;
-            }
-           else { //at bottom of screen 
-              img = loadImage("frame_0_delay-0.05s.jpg");
-            }
-          }
-        }
+      BackgroundStuff(var bsX){
+      batSignal = loadImage("batsignal.png");
+      BackgroundStuffX = bsX;
+      }
+      void drawBatSignal(){
+      noStroke();
+      fill(257,260,180);
+      triangle(BackgroundStuffX-15,30,BackgroundStuffX-300,1200,BackgroundStuffX+135,30);
+      fill(247,250,170);
+      ellipse(BackgroundStuffX+60,30,150,80);
+      image(batSignal,BackgroundStuffX,0,120,60);
+      }
+      
+      void drawAndUpdate(){
+      drawBatSignal();
+      BackgroundStuffX-=0.1;
+      if(BackgroundStuffX < 0){
+      BackgroundStuffX = width + 100;
+      }
+      }
+      }
+  
         
   
         </script> 
