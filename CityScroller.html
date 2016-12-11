@@ -15,6 +15,7 @@
         Skyline fastSkyline = new Skyline(2,160,250,50);
         Skyline prettyFastSkyline = new Skyline(4,260,350,80); 
         BackgroundStuff newStuff = new BackgroundStuff(900);
+        Sidewalk newSidewalk = new Sidewalk();
 
         int REFRESH_RATEPER_SECOND = 30;
         int GREY = 204;
@@ -59,6 +60,12 @@
          if (keyPressed && keyCode == RIGHT_ARROW) {
             prettyFastSkyline.updateAndRefill();
             }
+          newSidewalk.drawLines();
+          if (keyPressed && keyCode == RIGHT_ARROW) {
+            newSidewalk.updateLines();
+            }
+          
+
       
       
 
@@ -119,12 +126,17 @@
           int getBx(){
           return BuildingX;
           }
+          int getBw(){
+          return BuildingW;
+          }
+
 
         
         }
 
         class Skyline{
-          var xPosition, buildingwidth, SkySpeed, UpperLimit, LowerLimit, SkylineColor, Y, isTower;
+          var xPosition, buildingwidth, SkySpeed, UpperLimit, LowerLimit, SkylineColor, Y, last;
+          boolean isTower;
           ArrayList<Building> BuildingList; 
           ArrayList<Tower> TowerList;
     
@@ -137,6 +149,7 @@
             buildingwidth = 0;
             Y = 0;
             isTower = true;
+            fillingBuildings = false;
             BuildingList = new ArrayList<Building>();
             TowerList = new ArrayList<Tower>();
           }
@@ -155,10 +168,9 @@
               isTower = false;
               }
               xPosition += buildingwidth + 2;
-            
             } 
           void addSkyline(){
-            while (xPosition < width){
+            while (xPosition <= width + 100){
             addBuilding();
             } 
             }
@@ -185,11 +197,16 @@
               currentTower.update();
               }
           Building firstBuilding = BuildingList.get(0);
-          if(firstBuilding.getBx() <= -200){
+          if(firstBuilding.getBx() <= -300){
           BuildingList.remove(0);
-          TowerList.remove(0);
             }
-          
+          last = BuildingList.size();
+          Building lastBuilding = BuildingList.get(last - 1);
+          Building second2lastBuilding = BuildingList.get(last - 2);
+          if(lastBuilding.getBx() <= width - lastBuilding.getBw()){
+          addBuilding();
+          xPosition -= second2lastBuilding.getBw() - 2;
+          }
           }
 
           }
@@ -217,6 +234,22 @@
       if(BackgroundStuffX < 0){
       BackgroundStuffX = width + 100;
       }
+      }
+      }
+      class Sidewalk{
+      var SideWalkX;
+      Sidewalk(){
+      SideWalkX = 100;
+      }
+      void drawLines(){
+      fill(220,220,220);
+      rect(0,600,1240,100);
+      line(SideWalkX,600,SideWalkX,650);
+      line(SideWalkX+100,600,SideWalkX+100,650);
+  
+      }
+      void updateLines(){
+      SideWalkX--;
       }
       }
   
